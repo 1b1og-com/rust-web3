@@ -11,7 +11,6 @@ pub struct BlockHeader {
     pub parent_hash: H256,
     /// Hash of the uncles
     #[serde(rename = "sha3Uncles")]
-    #[serde(default)] // Celo doesn't have this field.
     pub uncles_hash: H256,
     /// Miner/author's address.
     #[serde(rename = "miner")]
@@ -32,7 +31,6 @@ pub struct BlockHeader {
     pub gas_used: U256,
     /// Gas Limit
     #[serde(rename = "gasLimit")]
-    #[serde(default)] // Celo doesn't have this field.
     pub gas_limit: U256,
     /// Extra data
     #[serde(rename = "extraData")]
@@ -43,7 +41,6 @@ pub struct BlockHeader {
     /// Timestamp
     pub timestamp: U256,
     /// Difficulty
-    #[serde(default)] // Celo doesn't have this field.
     pub difficulty: U256,
     /// Mix Hash
     #[serde(rename = "mixHash")]
@@ -63,7 +60,6 @@ pub struct Block<TX> {
     pub parent_hash: H256,
     /// Hash of the uncles
     #[serde(rename = "sha3Uncles")]
-    #[serde(default)] // Celo doesn't have this field.
     pub uncles_hash: H256,
     /// Miner/author's address.
     #[serde(rename = "miner")]
@@ -84,7 +80,6 @@ pub struct Block<TX> {
     pub gas_used: U256,
     /// Gas Limit
     #[serde(rename = "gasLimit")]
-    #[serde(default)] // Celo doesn't have this field.
     pub gas_limit: U256,
     /// Extra data
     #[serde(rename = "extraData")]
@@ -95,7 +90,6 @@ pub struct Block<TX> {
     /// Timestamp
     pub timestamp: U256,
     /// Difficulty
-    #[serde(default)] // Celo doesn't have this field.
     pub difficulty: U256,
     /// Total difficulty
     #[serde(rename = "totalDifficulty")]
@@ -104,7 +98,6 @@ pub struct Block<TX> {
     #[serde(default, rename = "sealFields")]
     pub seal_fields: Vec<Bytes>,
     /// Uncles' hashes
-    #[serde(default)] // Celo doesn't have this field.
     pub uncles: Vec<H256>,
     /// Transactions
     pub transactions: Vec<TX>,
@@ -157,6 +150,8 @@ pub enum BlockId {
     Hash(H256),
     /// By Number
     Number(BlockNumber),
+    /// By String
+    String(String),
 }
 
 impl Serialize for BlockId {
@@ -171,6 +166,7 @@ impl Serialize for BlockId {
                 s.end()
             }
             BlockId::Number(ref num) => num.serialize(serializer),
+            BlockId::String(ref string) => string.serialize_str(serializer),
         }
     }
 }
@@ -190,5 +186,11 @@ impl From<BlockNumber> for BlockId {
 impl From<H256> for BlockId {
     fn from(hash: H256) -> Self {
         BlockId::Hash(hash)
+    }
+}
+
+impl From<String> for BlockId {
+    fn from(string: String) -> Self {
+        BlockId::String(string)
     }
 }
